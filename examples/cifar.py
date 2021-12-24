@@ -22,6 +22,22 @@ except ImportError:
   print('Warning: OverBoard not installed, no logging/plotting will be performed. See https://pypi.org/project/overboard/')
   Logger = None
 
+def make_model():
+    net = nn.Sequential(
+        nn.Conv2d(3, 32, 3),
+        nn.ReLU(),
+        nn.MaxPool2d(2),
+        nn.Conv2d(32, 64, 3),
+        nn.ReLU(),
+        nn.MaxPool2d(2),
+        nn.Conv2d(64, 64, 3),
+        nn.ReLU(),
+        nn.Flatten(),
+        nn.Linear(1024, 64),
+        nn.ReLU(),
+        nn.Linear(64, 10),
+    )
+    return net
 
 def train(args, net, device, train_loader, optimizer, epoch, logger):
   net.train()
@@ -133,7 +149,7 @@ def main():
   test_loader = torch.utils.data.DataLoader(test_set, batch_size=args.batch_size, num_workers=2, shuffle=False)
 
   # model
-  net = getattr(models, args.model)()
+  net = make_model()
 
   net = net.to(args.device)
   if args.device != 'cpu' and args.parallel:
